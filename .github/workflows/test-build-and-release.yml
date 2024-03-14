@@ -3,7 +3,7 @@ on: [push]
 jobs:
   staticcheck:
     name: Static analysis
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Install splint
         run: |
