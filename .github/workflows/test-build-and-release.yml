@@ -1,6 +1,18 @@
 name: Test, build and release
 on: [push]
 jobs:
+  staticcheck:
+    name: Static analysis
+    run-on: ubuntu-latest
+    steps:
+      - name: Install splint
+        run: |
+          sudo apt install splint
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+      - name: Run staticcheck
+        run: |
+          splint --compdef --exportlocal simplecalculator.c operations.c
   unit-test:
     name: Unit test
     runs-on: ubuntu-latest
@@ -21,17 +33,20 @@ jobs:
     name: Build and delivery
     permissions:
       contents: write
-    needs: [unit-test]
+    needs: [staticcheck, unit-test]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+      - name: Generate neptun.txt
+        run: |
+          echo "bri01x" > neptun.txt
       - name: Building
         run: |
           gcc operations.c simplecalculator.c -o simplecalculator
       - name: Creating tar.gz
         run: |
-          tar -czvf simplecalculator.tar.gz simplecalculator
+          tar -czvf simplecalculator.tar.gz simplecalculator neptun.txt
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -39,3 +54,4 @@ jobs:
           title: "Development build"
           files: |
             simplecalculator.tar.gz
+
