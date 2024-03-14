@@ -16,7 +16,7 @@ jobs:
             `pkg-config --cflags --libs check`
       - name: Testing with check
         run: |
-          ./check_operations
+          ./simplecalculator/check_operations
   building-and-delivery:
     name: Build and delivery
     permissions:
